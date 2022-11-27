@@ -14,7 +14,7 @@ export const Login = () => {
   const isAuth = useSelector(selectIsAuth)
   const dispatch = useDispatch()
 
-  const { register, handleSubmit, setError, formState: { errors, isValid } } = useForm({
+  const { register, handleSubmit, formState: { errors, isValid } } = useForm({
     defaultValues: {
       email: 'test@test.test',
       password: 'test',
@@ -23,7 +23,7 @@ export const Login = () => {
   })
 
   const onSubmit = async (values) => {
-    const data = dispatch(fetchAuth(values))
+    const data = await dispatch(fetchAuth(values))
 
     if (!data.payload) {
       return alert('Failed to login')
@@ -61,7 +61,7 @@ export const Login = () => {
           {...register('password', { required: 'Input password' })}
           fullWidth
         />
-        <Button type="submit" size="large" variant="contained" fullWidth>
+        <Button type="submit" disabled={!isValid} size="large" variant="contained" fullWidth>
           Войти
         </Button>
       </form>
