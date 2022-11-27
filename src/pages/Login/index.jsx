@@ -6,10 +6,12 @@ import Button from "@mui/material/Button";
 
 import styles from "./Login.module.scss";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
-import { fetchAuth } from "../../redux/slices/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAuth, selectIsAuth } from "../../redux/slices/auth";
+import { Navigate } from "react-router-dom";
 
 export const Login = () => {
+  const isAuth = useSelector(selectIsAuth)
   const dispatch = useDispatch()
 
   const { register, handleSubmit, setError, formState: { errors, isValid } } = useForm({
@@ -20,11 +22,21 @@ export const Login = () => {
     mode: 'onChange',
   })
 
-  const onSubmit = (values) => {
-    dispatch(fetchAuth(values))
+  const onSubmit = async (values) => {
+    const data = dispatch(fetchAuth(values))
+
+    if (!data.payload) {
+      return alert('Failed to login')
+    }
+
+    if ('token' in data.payload) {
+      window.localStorage.setItem('token', data.payload.token)
+    }
   }
 
-  console.log(errors, isValid)
+  if (isAuth) {
+    return <Navigate to="/" />
+  }
 
   return (
     <Paper classes={{ root: styles.root }}>
